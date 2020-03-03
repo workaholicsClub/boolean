@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Boolean MVP</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+</head>
+<body>
+    <main id="app" style="background: lightgray;">
+        <v-app>
+            <v-app-bar app clipped-right dark flat>
+                <v-app-bar-nav-icon @click.stop="drawer = !drawer">
+                    <template v-slot:default>
+                        <v-icon>mdi-filter</v-icon>
+                    </template>
+                </v-app-bar-nav-icon>
+            </v-app-bar>
+
+            <v-navigation-drawer v-model="drawer" app :permanent="isPermanent">
+                <v-row>
+                    <v-col>
+                        <v-form>
+                            <v-container>
+                                <v-select
+                                        v-model="location"
+                                        :items="locationItems"
+                                        label="Город"
+                                ></v-select>
+                                <v-select
+                                        v-model="profession"
+                                        :items="professionItems"
+                                        chips
+                                        label="Позиция"
+                                        multiple
+                                ></v-select>
+                                <v-select
+                                        v-model="site"
+                                        :items="siteItems"
+                                        chips
+                                        label="Сайты"
+                                        multiple
+                                ></v-select>
+                                <v-autocomplete
+                                        v-model="skills"
+                                        :items="skillItems"
+                                        label="Навыки"
+                                        multiple
+                                        chips
+                                ></v-autocomplete>
+                            </v-container>
+                        </v-form>
+                    </v-col>
+                </v-row>
+                <template v-slot:append>
+                    <div class="pa-2">
+                        <v-btn block dark @click="searchApplicants">Найти</v-btn>
+                    </div>
+                </template>
+            </v-navigation-drawer>
+
+            <v-content>
+                <v-container class="fill-height" fluid>
+                    <v-row>
+                        <v-col cols="12" sm="6" v-for="applicant in applicants">
+                            <card :applicant="applicant" :selected-skills="skills"></card>
+                        </v-col>
+                    </v-row>
+                </v-container>
+            </v-content>
+
+        </v-app>
+    </main>
+
+    <script type="text/x-template" id="card-template">
+        <v-card class="mx-auto">
+            <v-list-item>
+                <v-list-item-avatar color="grey">
+                    <v-img :src="applicant.image"></v-img>
+                </v-list-item-avatar>
+                <v-list-item-content>
+                    <v-list-item-title class="headline">{{applicant.name}}</v-list-item-title>
+                    <v-list-item-subtitle>{{applicant.position}}</v-list-item-subtitle>
+                </v-list-item-content>
+            </v-list-item>
+
+            <v-card-text>
+                <v-row>
+                    <v-col cols="6" class="py-0">Возраст</v-col>
+                    <v-col cols="6" class="py-0">{{applicant.age}}</v-col>
+                </v-row>
+                <v-row>
+                    <v-col cols="6" class="py-0">Стаж</v-col>
+                    <v-col cols="6" class="py-0">{{applicant.experience}}</v-col>
+                </v-row>
+                <v-row>
+                    <v-col cols="6" class="py-0">Город</v-col>
+                    <v-col cols="6" class="py-0">{{applicant.city}}</v-col>
+                </v-row>
+            </v-card-text>
+
+            <v-card-text>
+                <v-chip-group column>
+                    <v-chip small v-for="skill in applicant.skills" :color="selectedSkills.indexOf(skill) > 0 ? 'primary' : null" :key="skill">{{skill}}</v-chip>
+                </v-chip-group>
+            </v-card-text>
+
+            <v-card-actions v-if="applicant.about">
+                <v-btn text>Подробнее</v-btn>
+                <v-spacer></v-spacer>
+                <v-btn icon @click="show = !show">
+                    <v-icon>{{ show ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
+                </v-btn>
+            </v-card-actions>
+
+            <v-expand-transition>
+                <div v-show="show">
+                    <v-divider></v-divider>
+
+                    <v-card-text>
+                        {{applicant.about}}
+                    </v-card-text>
+                </div>
+            </v-expand-transition>
+        </v-card>
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <script src="/assets/search.js"></script>
+</body>
+</html>
